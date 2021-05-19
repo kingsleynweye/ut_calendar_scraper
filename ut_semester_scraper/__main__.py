@@ -15,9 +15,8 @@ def main():
     
     args = parser.parse_args()
     calendar = Calendar(args.start_year,args.start_month,args.start_day,args.end_year,args.end_month,args.end_day)
-    # calendar.scrape()
-    # print(calendar)
-    calendar.label_dates()
+    calendar.scrape()
+    print(calendar)
     
 if __name__ == "__main__":
     sys.exit(main())
