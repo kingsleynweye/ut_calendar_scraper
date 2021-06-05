@@ -1,9 +1,6 @@
-import os
 import datetime
-from time import sleep
 import pandas as pd
 import requests
-import urllib.request
 from bs4 import BeautifulSoup
 from ut_semester_scraper.holiday import Holiday
 from ut_semester_scraper.semester import Semester
@@ -120,8 +117,13 @@ class Calendar():
             raise Exception(f'Date must be within {self.get_start_date()} and {self.get_end_date()}')
 
         if result[0] and result[1].get_title() == 'Other':
-                result = self.__date_is_winter_break(year,month,day)
-        
+            winter_break_result = self.__date_is_winter_break(year,month,day)
+
+            if winter_break_result[0]:
+                result = winter_break_result
+            else:
+                pass
+
         return result
         
     def __str__(self):
@@ -191,7 +193,8 @@ class Calendar():
             all_semesters += self.get_summer_session_semesters(calendar_dir)
 
         for semester in all_semesters:
-            if semester.get_start_date() >= self.get_start_date() and semester.get_start_date() <= self.get_end_date():
+            if  self.get_start_date() <= semester.get_start_date() <= self.get_end_date() \
+                or self.get_start_date() <= semester.get_end_date() <= self.get_end_date() :
                 semesters.append(semester)
             else:
                 continue
@@ -213,8 +216,7 @@ class Calendar():
         df.loc[df['is_semester']==1,'semester_name'] = df.loc[df['is_semester']==1]['date'].map(
             lambda x: self.date_is_in_semesters(x.year,x.month,x.day)[1].get_title().split(' ')[0].lower()
         )
-        print(df.iloc[0:31])
-        assert False
+        return df
         
     def get_long_session_semesters(self,calendar_dir):
         semester_list = []
@@ -313,6 +315,7 @@ class Calendar():
                     continue
 
                 if 'residence halls open' in tag_text:
+                    
                     month_day = tag.find_previous('dt').get_text()
                     date = year + ' ' + month_day
                     date = datetime.datetime.strptime(date,self.__SITE_DATE_FMT)
