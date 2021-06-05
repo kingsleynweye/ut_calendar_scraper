@@ -1,6 +1,6 @@
 import datetime
 import holidays
-from ut_semester_scraper.holiday import Holiday
+from ut_calendar_scraper.holiday import Holiday
 
 class Semester:
     def __init__(self,title,start_year,start_month,start_day,end_year,end_month,end_day,holidays=[]):

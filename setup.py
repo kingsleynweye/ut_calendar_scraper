@@ -9,7 +9,7 @@ with open('requirements.txt', 'r') as fh:
    requirements = [requirement for requirement in requirements if len(requirement) != 0 and requirement[0] != '#']
 
 setuptools.setup(
-    name='ut_semester_scraper',
+    name='ut_calendar_scraper',
     version='0.0.1',
     author='Kingsley Nweye',
     author_email='nweye@utexas.edu',
@@ -18,7 +18,7 @@ setuptools.setup(
     long_description_content_type='text/markdown',
     url='',
     entry_points = {
-        'console_scripts':['ut_semester_scraper = ut_semester_scraper.__main__:main'],
+        'console_scripts':['ut_calendar_scraper = ut_calendar_scraper.__main__:main'],
     },
     packages=setuptools.find_packages(),
     install_requires=requirements,

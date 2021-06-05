@@ -2,8 +2,8 @@ import datetime
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-from ut_semester_scraper.holiday import Holiday
-from ut_semester_scraper.semester import Semester
+from ut_calendar_scraper.holiday import Holiday
+from ut_calendar_scraper.semester import Semester
 
 class Calendar():
     def __init__(self,start_year,start_month,start_day,end_year,end_month,end_day):

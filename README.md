@@ -1,4 +1,4 @@
-# UT Semester Scraper
+# UT Calendar Scraper
 ## Description
 Web scrape semester name, start and end dates from [UT Registrar calendars](https://registrar.utexas.edu/calendars). Also labels observed university and United States holidays.
 
@@ -8,18 +8,18 @@ Follow these steps to create and activate a virtual environment, and install thi
 ```
 python -m venv env
 source env/bin/activate
-python -m pip install git+https://github.com/kingsleynweye/ut_semester_scraper.git
+python -m pip install git+https://github.com/kingsleynweye/ut_calendar_scraper.git
 ```
 
 ## Usage
 See the Command Line Interface help for instructions:
 ```
-python -m ut_semester_scraper -h
+python -m ut_calendar_scraper -h
 ```
 
 The quickest way to get labeled dates within a date range is to make use of the `label_dates()` function in the `Calendar` class
 ```python
-from ut_semester_scraper.calendar import Calendar
+from ut_calendar_scraper.calendar import Calendar
 
 calendar = Calendar(
     start_year=2019,
