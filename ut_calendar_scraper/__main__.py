@@ -16,8 +16,6 @@ def main():
     parser.add_argument('-f','--filepath',default=None,dest='filepath',type=str,help='Filepath to write to.')
     args = parser.parse_args()
 
-    print('here')
-
     calendar = Calendar(args.start_year,args.start_month,args.start_day,args.end_year,args.end_month,args.end_day)
     data = calendar.label_dates()
 
