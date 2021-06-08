@@ -212,7 +212,7 @@ class Calendar():
         df['is_semester'] = df['semester'].map(lambda x: 1 if x[0] else 0)
         df['semester_name'] = df['semester'].map(lambda x: x[1].get_title().split(' ')[0].lower() if x[0] else 0)
         df = df.drop(columns=['holiday','semester'])
-        df = df[(df['date'] >= self.get_start_date()) & (df['date'] <= self.get_end_date())].copy()
+        df = df[(df['date'].dt.date >= self.get_start_date()) & (df['date'].dt.date <= self.get_end_date())].copy()
         return df
         
     def get_long_session_semesters(self,calendar_dir):
