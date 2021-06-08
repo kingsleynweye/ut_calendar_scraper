@@ -254,8 +254,9 @@ class Calendar():
                     dt = self.validate_dt(tag.find_previous('dt'))
                     month_days = dt.get_text()
                     month = month_days.split(' ')[0]
-                    holiday_start_day = month_days.split(' ')[-1].split('-')[0]
-                    holiday_end_day = month_days.split(' ')[-1].split('-')[-1]
+                    days = month_days.split(' ')[-1]
+                    holiday_start_day = days[0:2]
+                    holiday_end_day = days[3:]
                     string = year + ' ' + month + ' ' + holiday_start_day
                     holiday_start_date = datetime.datetime.strptime(string,self.__SITE_DATE_FMT)
                     string = year + ' ' + month + ' ' + holiday_end_day
