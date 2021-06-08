@@ -39,7 +39,7 @@ class Semester:
         us_holidays.get(self.get_end_date())
         us_holiday_list = []
         
-        for date in us_holidays.keys():
+        for date in list(us_holidays):
             us_holiday = us_holidays.get(date,None)
             
             if us_holiday and us_holiday in observed_us_holidays:
@@ -48,7 +48,7 @@ class Semester:
                 day = int(date.day)
 
                 if self.date_is_in_semester(year,month,day) and not self.date_is_in_holidays(year,month,day)[0]:
-                    holiday = Holiday(us_holidays.get(date),year,month,day,year,month,day)
+                    holiday = Holiday(us_holiday,year,month,day,year,month,day)
                     us_holiday_list.append(holiday)
         
         self.set_holidays(self.get_holidays() + us_holiday_list)
