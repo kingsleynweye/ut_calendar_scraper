@@ -39,8 +39,10 @@ class Semester:
         us_holidays.get(self.get_end_date())
         us_holiday_list = []
         
-        for date in us_holidays:
-            if us_holidays.get(date) in observed_us_holidays:
+        for date in us_holidays.keys():
+            us_holiday = us_holidays.get(date,None)
+            
+            if us_holiday and us_holiday in observed_us_holidays:
                 year = int(date.year)
                 month = int(date.month)
                 day = int(date.day)
