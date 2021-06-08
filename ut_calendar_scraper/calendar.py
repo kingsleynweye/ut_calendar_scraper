@@ -205,17 +205,14 @@ class Calendar():
         self.scrape()
         date_range = pd.date_range(self.get_start_date(),self.get_end_date(),freq='D')
         df = pd.DataFrame({'date':date_range})
-        df['day_of_week'] = df['date'].dt.weekday
-        df['day_name'] = df['date'].dt.day_name().str.lower()
-        df['is_weekend'] = df['day_of_week'].map(lambda x: 1 if x > 4 else 0)
-        df['is_holiday'] = df['date'].map(lambda x: 1 if self.date_is_a_holiday(x.year,x.month,x.day)[0] else 0)
-        df.loc[df['is_holiday']==1,'holiday_name'] = df.loc[df['is_holiday']==1]['date'].map(
-            lambda x: self.date_is_a_holiday(x.year,x.month,x.day)[1].get_title().lower()
-        )
-        df['is_semester'] = df['date'].map(lambda x: 1 if self.date_is_in_semesters(x.year,x.month,x.day)[0] else 0)
-        df.loc[df['is_semester']==1,'semester_name'] = df.loc[df['is_semester']==1]['date'].map(
-            lambda x: self.date_is_in_semesters(x.year,x.month,x.day)[1].get_title().split(' ')[0].lower()
-        )
+        df['holiday'] = df['date'].map(lambda x: self.date_is_a_holiday(x.year,x.month,x.day))
+        df['is_holiday'] = df['holiday'].map(lambda x: 1 if x[0] else 0)
+        df['holiday_name'] = df['holiday'].map(lambda x: x[1].get_title().lower() if x[0] else 0)
+        df['semester'] = df['date'].map(lambda x: self.date_is_in_semesters(x.year,x.month,x.day))
+        df['is_semester'] = df['semester'].map(lambda x: 1 if x[0] else 0)
+        df['semester_name'] = df['semester'].map(lambda x: x[1].get_title().split(' ').lower() if x[0] else 0)
+        df = df.drop(columns=['holiday','semester'])
+        df = df[(df['date'] >= self.get_start_date()) & (df['date'] <= self.get_end_date())].copy()
         return df
         
     def get_long_session_semesters(self,calendar_dir):
