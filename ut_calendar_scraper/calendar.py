@@ -204,15 +204,15 @@ class Calendar():
     def label_dates(self):
         self.scrape()
         date_range = pd.date_range(self.get_start_date(),self.get_end_date(),freq='D')
-        df = pd.DataFrame({'date':date_range})
-        df['holiday'] = df['date'].map(lambda x: self.date_is_a_holiday(x.year,x.month,x.day))
+        df = pd.DataFrame({'timestamp':date_range})
+        df['holiday'] = df['timestamp'].map(lambda x: self.date_is_a_holiday(x.year,x.month,x.day))
         df['is_holiday'] = df['holiday'].map(lambda x: 1 if x[0] else 0)
         df['holiday_name'] = df['holiday'].map(lambda x: x[1].get_title().lower() if x[0] else 0)
-        df['semester'] = df['date'].map(lambda x: self.date_is_in_semesters(x.year,x.month,x.day))
+        df['semester'] = df['timestamp'].map(lambda x: self.date_is_in_semesters(x.year,x.month,x.day))
         df['is_semester'] = df['semester'].map(lambda x: 1 if x[0] else 0)
         df['semester_name'] = df['semester'].map(lambda x: x[1].get_title().split(' ')[0].lower() if x[0] else 0)
         df = df.drop(columns=['holiday','semester'])
-        df = df[(df['date'].dt.date >= self.get_start_date()) & (df['date'].dt.date <= self.get_end_date())].copy()
+        df = df[(df['timestamp'].dt.date >= self.get_start_date()) & (df['timestamp'].dt.date <= self.get_end_date())].copy()
         return df
         
     def get_long_session_semesters(self,calendar_dir):
