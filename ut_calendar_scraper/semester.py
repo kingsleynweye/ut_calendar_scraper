@@ -1,5 +1,5 @@
 import datetime
-import holidays
+import pandas as pd
 from ut_calendar_scraper.holiday import Holiday
 
 class Semester:
@@ -32,26 +32,27 @@ class Semester:
         
     def set_holidays(self,holidays):
         self.__holidays = holidays
-    
-    def add_us_holidays(self,observed_us_holidays):
-        us_holidays = holidays.US()
-        us_holidays.get(self.get_start_date())
-        us_holidays.get(self.get_end_date())
-        us_holiday_list = []
-        
-        for date in list(us_holidays):
-            us_holiday = us_holidays.get(date,None)
-            
-            if us_holiday and us_holiday in observed_us_holidays:
-                year = int(date.year)
-                month = int(date.month)
-                day = int(date.day)
 
-                if self.date_is_in_semester(year,month,day) and not self.date_is_in_holidays(year,month,day)[0]:
-                    holiday = Holiday(us_holiday,year,month,day,year,month,day)
-                    us_holiday_list.append(holiday)
+    def get_observed_holidays(self):
+        observed_holiday_list = []
+        start_timestamp = datetime.datetime(self.get_start_date().year,self.get_start_date().month,self.get_start_date().day)
+        end_timestamp = datetime.datetime(self.get_end_date().year,self.get_end_date().month,self.get_end_date().day)
+        timestamps = pd.date_range(start_timestamp,end_timestamp,freq='D')
         
-        self.set_holidays(self.get_holidays() + us_holiday_list)
+        for timestamp in timestamps:
+            year = timestamp.year
+            month = timestamp.month
+            day = timestamp.day
+            name = Holiday.get_observed_holiday_name(year,month,day)
+
+            if name:
+                holiday = Holiday(name,year,month,day,year,month,day)
+                observed_holiday_list.append(holiday)
+            
+            else:
+                continue
+        
+        self.set_holidays(self.get_holidays() + observed_holiday_list)
         
     def date_is_in_semester(self,year,month,day):
         date = datetime.date(year,month,day)

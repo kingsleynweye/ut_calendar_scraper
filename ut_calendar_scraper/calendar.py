@@ -10,20 +10,6 @@ class Calendar():
         self.set_start_date(start_year,start_month,start_day)
         self.set_end_date(end_year,end_month,end_day)
         self.__UT_REGISTRAR_URL = 'https://registrar.utexas.edu/calendars/'
-        self.__OBSERVED_US_HOLIDAYS = [
-            'New Year\'s Day',
-            'New Year\'s Day (Observed)',
-            'Martin Luther King, Jr. Day',
-            'Martin Luther King, Jr. Day (Observed)',
-            'Independence Day',
-            'Independence Day (Observed)',
-            'Labor Day',
-            'Labor Day (Observed)',
-            'Thanksgiving',
-            'Thanksgiving (Observed)',
-            'Christmas Day',
-            'Christmas Day (Observed)',
-        ]
         self.__SITE_DATE_FMT = '%Y %B %d'
         
     def get_semesters(self):
@@ -117,12 +103,18 @@ class Calendar():
             raise Exception(f'Date must be within {self.get_start_date()} and {self.get_end_date()}')
 
         if result[0] and result[1].get_title() == 'Other':
-            winter_break_result = self.__date_is_winter_break(year,month,day)
+            name = Holiday.get_observed_holiday_name(year,month,day)
 
-            if winter_break_result[0]:
-                result = winter_break_result
+            if name:
+                result = (True,Holiday(name,year,month,day,year,month,day))
+
             else:
-                pass
+                winter_break_result = self.__date_is_winter_break(year,month,day)
+
+                if winter_break_result[0]:
+                    result = winter_break_result
+                else:
+                    pass
 
         return result
         
@@ -290,7 +282,7 @@ class Calendar():
                     continue
 
             semester = Semester(title,start_year,start_month,start_day,end_year,end_month,end_day,holidays=holidays)
-            semester.add_us_holidays(self.__OBSERVED_US_HOLIDAYS)
+            semester.get_observed_holidays()
             semester_list.append(semester)
             
         return semester_list
@@ -333,7 +325,7 @@ class Calendar():
                     pass
 
             semester = Semester(title,start_year,start_month,start_day,end_year,end_month,end_day,holidays=holidays)
-            semester.add_us_holidays(self.__OBSERVED_US_HOLIDAYS)
+            semester.get_observed_holidays()
             semester_list.append(semester)
         
         return semester_list
