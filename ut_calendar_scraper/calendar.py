@@ -61,7 +61,7 @@ class Calendar():
                 semester_dict[semester.get_title()] = semester
         
         date = datetime.date(year,month,day)
-        result = (False,None)
+        result = (None,None)
 
         semester_end_dates = [
             semester_dict[f'Fall Semester {year-1}'].get_end_date(),
@@ -95,7 +95,7 @@ class Calendar():
         date = datetime.date(year,month,day)
 
         if date >= self.get_start_date() and date <= self.get_end_date():
-            result = (True,Holiday('Other',year,month,day,year,month,day))
+            result = (None,None)
             
             for i, semester in enumerate(self.get_semesters()):
                 if semester.date_is_in_semester(year,month,day):
@@ -108,7 +108,7 @@ class Calendar():
         else:
             raise Exception(f'Date must be within {self.get_start_date()} and {self.get_end_date()}')
 
-        if result[0] and result[1].get_title() == 'Other':
+        if result[0] is None:
             name = Holiday.get_observed_holiday_name(year,month,day)
 
             if name:
