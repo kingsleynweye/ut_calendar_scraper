@@ -10,7 +10,7 @@ with open('requirements.txt', 'r') as fh:
 
 setuptools.setup(
     name='ut_calendar_scraper',
-    version='0.0.3',
+    version='0.0.4',
     author='Kingsley Nweye',
     author_email='nweye@utexas.edu',
     description='This repository contains code that may be used to scrape semester and holiday dates from the UT Registrar\'s website.',
