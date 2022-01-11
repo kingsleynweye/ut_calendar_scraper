@@ -6,7 +6,7 @@ from ut_calendar_scraper.calendar import Calendar
 
 def main():
     parser = argparse.ArgumentParser(prog='ut_calendar_scraper',description='Scrape semester and holiday dates from the UT Registrar\'s website.')
-    parser.add_argument('--version', action='version', version='%(prog)s 0.0.1')
+    parser.add_argument('--version', action='version', version='%(prog)s 0.0.2')
     parser.add_argument('start_year',type=int,help='Period start year')
     parser.add_argument('start_month',type=int,help='Period start month')
     parser.add_argument('start_day',type=int,help='Period start day')
