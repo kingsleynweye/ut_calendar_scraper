@@ -63,11 +63,17 @@ class Calendar():
         date = datetime.date(year,month,day)
         result = (False,None)
 
-        semester_end_dates = [semester_dict[f'Fall Semester {year-1}'].get_end_date(),semester_dict[f'Fall Semester {year}'].get_end_date()]
-        semester_start_dates = [semester_dict[f'Spring Semester {year}'].get_start_date(),semester_dict[f'Spring Semester {year+1}'].get_start_date()]
+        semester_end_dates = [
+            semester_dict[f'Fall Semester {year-1}'].get_end_date(),
+            semester_dict[f'Fall Semester {year}'].get_end_date() if f'Fall Semester {year}' in semester_dict.keys() else None
+        ]
+        semester_start_dates = [
+            semester_dict[f'Spring Semester {year}'].get_start_date(),
+            semester_dict[f'Spring Semester {year+1}'].get_start_date() if f'Spring Semester {year+1}' in semester_dict.keys() else None
+        ]
 
         for semester_end_date, semester_start_date in zip(semester_end_dates,semester_start_dates):
-            if semester_end_date < date < semester_start_date:
+            if semester_end_date is not None and semester_start_date is not None and semester_end_date < date < semester_start_date:
                 start_date = datetime.datetime(semester_end_date.year,semester_end_date.month,semester_end_date.day) + datetime.timedelta(days=1)
                 end_date = datetime.datetime(semester_start_date.year,semester_start_date.month,semester_start_date.day) - datetime.timedelta(days=1)
                 result = (True,Holiday(
