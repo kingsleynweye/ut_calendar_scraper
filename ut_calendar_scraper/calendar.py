@@ -55,7 +55,7 @@ class Calendar():
         semester_dict = {}
         
         for calendar_dir in calendar_dirs:
-            semesters = self.get_long_session_semesters(calendar_dir)
+            semesters = self.scrape_long_session_semesters(calendar_dir)
             
             for semester in semesters:
                 semester_dict[semester.get_title()] = semester
@@ -185,10 +185,10 @@ class Calendar():
         semesters = []
 
         for calendar_dir in long_session_dirs:
-            all_semesters += self.get_long_session_semesters(calendar_dir)
+            all_semesters += self.scrape_long_session_semesters(calendar_dir)
             
         for calendar_dir in summer_session_dirs:
-            all_semesters += self.get_summer_session_semesters(calendar_dir)
+            all_semesters += self.scrape_summer_session_semesters(calendar_dir)
 
         for semester in all_semesters:
             if  self.get_start_date() <= semester.get_start_date() <= self.get_end_date() \
@@ -198,6 +198,36 @@ class Calendar():
                 continue
 
         self.set_semesters(semesters)
+
+    def scrape_long_session_semesters(self,calendar_dir):
+        calendar_start_year = int(calendar_dir.split('-')[0])
+        semesters = []
+
+        if calendar_start_year <= 6:
+            raise AssertionError('Scraping of calendars that were for the 2006-2007 long session calendar and prior is not supported.')
+
+        elif 7 <= calendar_start_year <= 21:
+            semesters += self.get_2007_to_2021_long_session_semesters(calendar_dir)
+
+        else:
+            semesters += self.get_2022_to_present_semesters(calendar_dir)
+        
+        return semesters
+    
+    def scrape_summer_session_semesters(self,calendar_dir):
+        calendar_start_year = int(calendar_dir.replace('summer',''))
+        semesters = []
+
+        if calendar_start_year <= 6:
+            raise AssertionError('Scraping of calendars that were for the 2006 summer session calendar and prior is not supported.')
+
+        elif 7 <= calendar_start_year <= 22:
+            semesters += self.get_2007_to_2022_summer_session_semesters(calendar_dir)
+
+        else:
+            pass
+        
+        return semesters
 
     def label_dates(self):
         self.scrape()
@@ -212,8 +242,64 @@ class Calendar():
         df = df.drop(columns=['holiday','semester'])
         df = df[(df['timestamp'].dt.date >= self.get_start_date()) & (df['timestamp'].dt.date <= self.get_end_date())].copy()
         return df
-        
-    def get_long_session_semesters(self,calendar_dir):
+
+    def get_2022_to_present_semesters(self,calendar_dir):
+        semester_list = []
+        soup = self.__get_soup(calendar_dir)
+        tables = soup.findAll('table')
+
+        def _get_session_semester(table,semester_name,holiday_search_name=None,holiday_name=None,summer=False):
+            # semester
+            start_end_dates = table.find_previous('h3').text.strip()
+
+            if summer:
+                start_year = start_end_dates.split(',')[1].strip()
+                start_date = ' '.join(start_end_dates.split(',')[0].split(' - ')[0].split(' ')[-2:])
+                end_date = start_end_dates.split(',')[0].split(' - ')[-1]
+                  
+            else:
+                start_year = start_end_dates.split(' ')[-1]
+                start_date = start_end_dates.split(': ')[-1].split(' - ')[0]
+                end_date = start_end_dates.split(': ')[-1].split(' - ')[-1].split(',')[0]
+
+            end_year = start_year
+            start_date = datetime.datetime.strptime(start_year + ' ' + start_date,self.__SITE_DATE_FMT)
+            end_date = datetime.datetime.strptime(end_year + ' ' + end_date,self.__SITE_DATE_FMT)
+            
+            # holiday
+            if summer:
+                holidays = []
+            else:
+                table_data = [td.text for td in table.findAll('td')]
+                holiday_index = [i for i, t in enumerate(table_data) if holiday_search_name.lower() in t.lower()][0] - 1
+                holiday_dates = table_data[holiday_index].strip()
+                holiday_month = holiday_dates.split(' ')[0]
+                holiday_start_day = holiday_dates.split(' ')[1]
+                holiday_start_date = datetime.datetime.strptime(start_year + ' ' + holiday_month + ' ' + holiday_start_day,self.__SITE_DATE_FMT)
+                holiday_end_day = holiday_dates.split(' ')[-1]
+                holiday_end_date = datetime.datetime.strptime(start_year + ' ' + holiday_month + ' ' + holiday_end_day,self.__SITE_DATE_FMT)
+                holidays = [Holiday(
+                    holiday_name.capitalize(),
+                    holiday_start_date.year,holiday_start_date.month,holiday_start_date.day,
+                    holiday_end_date.year,holiday_end_date.month,holiday_end_date.day
+                )]
+
+            semester = Semester(
+                f'{semester_name.capitalize()} Semester {start_year}',
+                start_date.year,start_date.month,start_date.day,
+                end_date.year,end_date.month,end_date.day,holidays=holidays
+            )
+            semester.get_observed_holidays()
+            return semester
+
+        # semesters
+        semester_list.append(_get_session_semester(tables[0],'fall',holiday_search_name='thanksgiving',holiday_name='thanksgiving break'))
+        semester_list.append(_get_session_semester(tables[2],'spring',holiday_search_name='spring break',holiday_name='spring break'))
+        semester_list.append(_get_session_semester(tables[4],'summer',summer=True))
+
+        return semester_list
+
+    def get_2007_to_2021_long_session_semesters(self,calendar_dir):
         semester_list = []
         soup = self.__get_soup(calendar_dir)
         semesters = soup.findAll(['dl'])
@@ -293,7 +379,7 @@ class Calendar():
             
         return semester_list
 
-    def get_summer_session_semesters(self,calendar_dir):
+    def get_2007_to_2022_summer_session_semesters(self,calendar_dir):
         semester_list = []
         soup = self.__get_soup(calendar_dir)
         divs = soup.find_all('div', attrs={'class': 'field body'})

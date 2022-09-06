@@ -1,5 +1,4 @@
 import argparse
-import json
 import os
 import sys
 from ut_calendar_scraper.calendar import Calendar
