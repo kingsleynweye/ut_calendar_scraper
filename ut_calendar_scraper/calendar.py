@@ -306,7 +306,7 @@ class Calendar():
 
         for sem in semesters[1:]:
             title = sem.find_previous('h2').get_text()
-            year = title.split(' ')[-1]
+            year = title.split(' ')[-1].strip()
             
             holidays = []
 
@@ -382,12 +382,12 @@ class Calendar():
     def get_2007_to_2022_summer_session_semesters(self,calendar_dir):
         semester_list = []
         soup = self.__get_soup(calendar_dir)
-        divs = soup.find_all('div', attrs={'class': 'field body'})
+        divs = soup.find_all('div', attrs={'class': 'ut-copy'})
         semesters = divs[0].findAll('dl')
         
         for sem in semesters:
             title = sem.find_previous('h1').get_text()
-            year = title.split(' ')[-1]
+            year = title.split(' ')[-1].strip()
             holidays = []
 
             for tag in sem:
@@ -397,7 +397,6 @@ class Calendar():
                     continue
 
                 if 'residence halls open' in tag_text:
-                    
                     month_day = tag.find_previous('dt').get_text()
                     date = year + ' ' + month_day
                     date = datetime.datetime.strptime(date,self.__SITE_DATE_FMT)
