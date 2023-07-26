@@ -11,7 +11,7 @@ class Holiday:
         'Independence Day',
         'Labor Day',
         'Martin Luther King, Jr. Day',
-        'Memorial Day'
+        'Memorial Day',
         'New Year\'s Day',
         'Thanksgiving',
     )
