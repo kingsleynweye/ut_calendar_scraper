@@ -2,17 +2,20 @@ import datetime
 import holidays
 
 class Holiday:
-    __OBSERVED_HOLIDAYS = [
-        'New Year\'s Day',
-        'Martin Luther King, Jr. Day',
+    DEFAULT_OBSERVED_HOLIDAYS = (
+        'Christmas Day',
+        'Christmas Eve',
+        'Day After Christmas',
+        'Emancipation Day In Texas',
+        'Friday After Thanksgiving',
         'Independence Day',
         'Labor Day',
+        'Martin Luther King, Jr. Day',
+        'Memorial Day'
+        'New Year\'s Day',
         'Thanksgiving',
-        'Friday After Thanksgiving',
-        'Christmas Eve',
-        'Christmas Day',
-        'Day After Christmas',
-    ]
+    )
+
     def __init__(self,title,start_year,start_month,start_day,end_year,end_month,end_day):
         self.set_title(title)
         self.set_start_date(start_year,start_month,start_day)
@@ -48,10 +51,11 @@ class Holiday:
         )
 
     @staticmethod
-    def get_observed_holiday_name(year,month,day):
+    def get_observed_holiday_name(year,month,day,observed_holidays=None):
         name = holidays.CountryHoliday('US',state='TX').get(datetime.date(year,month,day))
+        observed_holidays = Holiday.DEFAULT_OBSERVED_HOLIDAYS if observed_holidays is None else observed_holidays
 
-        if name and name.replace('(Observed)','').strip() in Holiday.__OBSERVED_HOLIDAYS:
+        if name and name.replace('(Observed)','').strip() in observed_holidays:
             return name
         else:
             return None

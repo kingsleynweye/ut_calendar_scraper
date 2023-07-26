@@ -6,9 +6,10 @@ from ut_calendar_scraper.holiday import Holiday
 from ut_calendar_scraper.semester import Semester
 
 class Calendar():
-    def __init__(self,start_year,start_month,start_day,end_year,end_month,end_day):
+    def __init__(self,start_year,start_month,start_day,end_year,end_month,end_day,observed_holidays=None):
         self.set_start_date(start_year,start_month,start_day)
         self.set_end_date(end_year,end_month,end_day)
+        self.set_observed_holidays(observed_holidays)
         self.__UT_REGISTRAR_URL = 'https://registrar.utexas.edu/calendars/'
         self.__SITE_DATE_FMT = '%Y %B %d'
         
@@ -21,6 +22,9 @@ class Calendar():
     def get_end_date(self):
         return self.__end_date
     
+    def get_observed_holidays(self):
+        return self.__observed_holidays
+    
     def set_semesters(self,semesters):
         self.__semesters = semesters
     
@@ -29,6 +33,9 @@ class Calendar():
     
     def set_end_date(self,year,month,day):
         self.__end_date = datetime.date(year,month,day)
+
+    def set_observed_holidays(self,observed_holidays):
+        self.__observed_holidays = Holiday.DEFAULT_OBSERVED_HOLIDAYS if observed_holidays is None else observed_holidays
         
     def get_semester_dates(self):
         dates = []
@@ -109,7 +116,7 @@ class Calendar():
             raise Exception(f'Date must be within {self.get_start_date()} and {self.get_end_date()}')
 
         if result[0] is None:
-            name = Holiday.get_observed_holiday_name(year,month,day)
+            name = Holiday.get_observed_holiday_name(year,month,day,observed_holidays=self.get_observed_holidays())
 
             if name:
                 result = (True,Holiday(name,year,month,day,year,month,day))
